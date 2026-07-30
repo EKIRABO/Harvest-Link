@@ -44,10 +44,6 @@ https://harvest-link-hutw.onrender.com
 
 https://github.com/EKIRABO/Harvest-Link
 
-**Software Requirements Specification (SRS)**
-
-Insert your SRS link here.
-
 ---
 
 # System Actors
