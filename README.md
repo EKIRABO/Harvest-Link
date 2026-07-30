@@ -230,12 +230,12 @@ npm install
 Create a `.env` file in the project root and add the following variables:
 
 ```env
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=your_password
-DB_NAME=harvestlink
-JWT_SECRET=your_secret_key
+DB_HOST=<your_database_host>
+DB_PORT=<your_database_port>
+DB_USER=<your_database_username>
+DB_PASSWORD=<your_database_password>
+DB_NAME=<your_database_name>
+JWT_SECRET=<your_jwt_secret>
 PORT=5000
 ```
 
