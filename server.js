@@ -63,7 +63,7 @@ app.get("/", (req, res) => {
   res.redirect("/login.html");
 });
 
-// Health check
+
 app.get("/api/health", (req, res) => {
   res.json({ status: "HarvestLink API is running." });
 });
