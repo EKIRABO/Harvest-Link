@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HarvestLink — Storage Dashboard</title>
+<script>
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+  }
+</script>
+<style>
+  :root {
+    --sidebar-bg: #16351f;
+    --sidebar-bg-2: #0f2417;
+    --sidebar-active: #2f8a4c;
+    --sidebar-text: #cfe0d3;
+    --sidebar-text-dim: #7fa088;
+    --brand: #2f8a4c;
+    --brand-dark: #23703b;
+    --bg: #f4f6f4;
+    --card-bg: #ffffff;
+    --border: #eaeceb;
+    --text: #1c211d;
+    --text-muted: #7c847e;
+    --blue: #3b6fd6;
+    --orange: #d98a2b;
+    --purple: #8a5cd6;
+    --red: #d65b5b;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+  a { text-decoration: none; color: inherit; }
+  button { font-family: inherit; }
+
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar { width: 240px; flex-shrink: 0; background: linear-gradient(180deg, var(--sidebar-bg), var(--sidebar-bg-2)); color: var(--sidebar-text); display: flex; flex-direction: column; padding: 1.25rem 0.9rem; }
+  .brand-row { display: flex; align-items: center; gap: 9px; padding: 0 6px 20px; }
+  .brand-icon { width: 30px; height: 30px; border-radius: 8px; background: var(--brand); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .brand-row .name { font-weight: 700; font-size: 15.5px; color: #fff; }
+
+  .farm-chip { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 10px; margin-bottom: 18px; }
+  .farm-avatar { width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(135deg, #6fbf73, #3a8f4e); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .farm-chip .farm-name { font-size: 13px; font-weight: 700; color: #fff; }
+  .farm-chip .farm-badge { font-size: 10.5px; color: #8fd39a; }
+
+  nav.side-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow-y: auto; }
+  .nav-link { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; font-size: 13.5px; color: var(--sidebar-text); cursor: pointer; }
+  .nav-link .ic { width: 17px; text-align: center; font-size: 14px; opacity: 0.85; }
+  .nav-link:hover { background: rgba(255,255,255,0.05); }
+  .nav-link.active { background: var(--sidebar-active); color: #fff; font-weight: 600; }
+  .nav-link.disabled { opacity: 0.45; cursor: default; }
+  .nav-link.disabled:hover { background: none; }
+  .nav-link .soon-tag { margin-left: auto; font-size: 9px; text-transform: uppercase; letter-spacing: 0.03em; background: rgba(255,255,255,0.08); padding: 2px 5px; border-radius: 4px; }
+  .nav-link .badge { margin-left: auto; background: #e05353; color: #fff; font-size: 10px; font-weight: 700; border-radius: 999px; min-width: 17px; height: 17px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+  .nav-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 10px 4px; }
+
+  .sidebar-promo { margin-top: 10px; background: rgba(255,255,255,0.06); border-radius: 10px; padding: 12px; font-size: 12px; color: var(--sidebar-text-dim); }
+  .sidebar-promo strong { display: block; color: #fff; font-size: 13px; margin-bottom: 4px; }
+  .sidebar-promo button { margin-top: 8px; width: 100%; padding: 7px; background: var(--brand); color: #fff; border: none; border-radius: 6px; font-size: 11.5px; font-weight: 600; cursor: pointer; }
+
+  main { flex: 1; padding: 1.6rem 2rem 2.4rem; max-width: 1400px; }
+
+  .top-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.4rem; flex-wrap: wrap; gap: 12px; }
+  .top-row h1 { font-size: 21px; font-weight: 700; margin-bottom: 3px; }
+  .top-row .sub { font-size: 13px; color: var(--text-muted); }
+  .top-right { display: flex; align-items: center; gap: 10px; }
+  .date-pill { display: flex; align-items: center; gap: 7px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 12.5px; color: var(--text-muted); }
+  .icon-btn { width: 36px; height: 36px; border-radius: 9px; border: 1px solid var(--border); background: var(--card-bg); cursor: pointer; font-size: 15px; position: relative; display: flex; align-items: center; justify-content: center; }
+  .icon-btn .badge { position: absolute; top: -5px; right: -5px; background: #e05353; color: #fff; font-size: 10px; font-weight: 700; border-radius: 999px; min-width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; padding: 0 3px; }
+  .add-new-btn { display: flex; align-items: center; gap: 6px; background: var(--brand); color: #fff; border: none; border-radius: 8px; padding: 9px 14px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .add-new-btn:hover { background: var(--brand-dark); }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 1.4rem; }
+  .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+  .stat-icon { width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .stat-icon.green { background: #e5f4e8; color: var(--brand); }
+  .stat-icon.blue { background: #e8effc; color: var(--blue); }
+  .stat-icon.orange { background: #fbf0e1; color: var(--orange); }
+  .stat-icon.purple { background: #f1eafb; color: var(--purple); }
+  .stat-card .label { font-size: 11.5px; color: var(--text-muted); margin-bottom: 3px; }
+  .stat-card .value { font-size: 18px; font-weight: 700; line-height: 1.2; }
+  .stat-card .sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .stat-card .sub.up { color: var(--brand); }
+
+  .panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+  .panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .panel-head h2 { font-size: 14.5px; font-weight: 700; }
+  .panel-head .view-all { font-size: 11.5px; color: var(--brand); cursor: pointer; font-weight: 600; }
+  .panel-foot { margin-top: 10px; font-size: 12px; color: var(--text-muted); }
+  .panel-empty { font-size: 12.5px; color: var(--text-muted); text-align: center; padding: 20px 8px; border: 1px dashed var(--border); border-radius: 10px; }
+
+  .grid-row-1 { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 14px; margin-bottom: 14px; align-items: stretch; }
+  .grid-row-2 { display: grid; grid-template-columns: 1.3fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .grid-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+  .donut-wrap { display: flex; flex-direction: column; align-items: center; padding: 6px 0 4px; }
+  .donut { width: 140px; height: 140px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; background: #eee; }
+  .donut::after { content: ""; position: absolute; width: 90px; height: 90px; border-radius: 50%; background: var(--card-bg); }
+  .donut-center { position: relative; z-index: 2; text-align: center; }
+  .donut-center .num { font-size: 16px; font-weight: 700; }
+  .donut-center .lbl { font-size: 10px; color: var(--text-muted); }
+  .legend { display: flex; gap: 16px; margin-top: 14px; font-size: 12px; }
+  .legend .item { display: flex; align-items: center; gap: 6px; color: var(--text-muted); }
+  .legend .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  .type-bar-item { margin-bottom: 12px; }
+  .type-bar-item:last-child { margin-bottom: 0; }
+  .type-bar-head { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
+  .type-bar-head .tname { font-weight: 600; }
+  .type-bar-track { height: 7px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+  .type-bar-fill { height: 100%; border-radius: 999px; background: var(--brand); }
+  .type-bar-fill.warn { background: var(--orange); }
+  .type-bar-fill.crit { background: var(--red); }
+
+  .row-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+  .row-item:last-child { border-bottom: none; }
+  .row-thumb { width: 34px; height: 34px; border-radius: 8px; background: #eef1ee; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+  .row-item .ri-title { font-size: 12.5px; font-weight: 600; }
+  .row-item .ri-meta { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+  .row-item .ri-right { margin-left: auto; text-align: right; display: flex; align-items: center; gap: 6px; }
+  .status-chip { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+  .status-chip.pending { background: #fbf0e1; color: var(--orange); }
+  .status-chip.confirmed { background: #e8effc; color: var(--blue); }
+  .status-chip.collected { background: #e5f4e8; color: var(--brand); }
+  .status-chip.cancelled { background: #f0f0f0; color: var(--text-muted); }
+
+  .mini-btn { border: 1px solid var(--border); background: #fff; border-radius: 6px; padding: 4px 9px; font-size: 11px; font-weight: 600; cursor: pointer; }
+  .mini-btn.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+  .mini-btn.danger { background: #fbe6e6; color: var(--red); border-color: #f3c9c9; }
+  .mini-btn:hover { opacity: 0.85; }
+
+  table.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table.data-table th { text-align: left; color: var(--text-muted); font-weight: 600; padding: 6px 8px; border-bottom: 1px solid var(--border); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.02em; }
+  table.data-table td { padding: 8px; border-bottom: 1px solid var(--border); }
+  table.data-table tr:last-child td { border-bottom: none; }
+
+  .notif-item { display: flex; gap: 9px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-ic { width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0; font-size: 12px; display: flex; align-items: center; justify-content: center; margin-top: 1px; background: #e8effc; color: var(--blue); }
+  .notif-text { font-size: 12px; line-height: 1.35; }
+  .notif-time { font-size: 10.5px; color: var(--text-muted); margin-top: 2px; }
+
+  .earnings-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .earnings-stat { background: var(--bg); border-radius: 8px; padding: 10px; text-align: center; }
+  .earnings-stat .e-num { font-size: 14px; font-weight: 700; }
+  .earnings-stat .e-lbl { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); align-items: center; justify-content: center; z-index: 50; padding: 20px; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: #fff; border-radius: 12px; padding: 1.4rem; width: 100%; max-width: 440px; }
+  .modal h3 { font-size: 15.5px; margin-bottom: 14px; }
+  .modal label { display: block; font-size: 12.5px; font-weight: 600; margin: 10px 0 4px; }
+  .modal label:first-of-type { margin-top: 0; }
+  .modal input, .modal select { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+  .btn { padding: 8px 14px; border-radius: 6px; font-size: 12.5px; cursor: pointer; border: none; font-weight: 600; }
+  .btn.primary { background: var(--brand); color: #fff; }
+  .btn.secondary { background: #fff; border: 1px solid var(--border); color: #333; }
+  .inline-msg { display: none; margin-top: 10px; padding: 8px 10px; border-radius: 6px; font-size: 12.5px; }
+  .inline-msg.show { display: block; }
+  .inline-msg.ok { background: #e5f4e8; color: var(--brand); }
+  .inline-msg.err { background: #fbe6e6; color: var(--red); }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1c211d; color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 13px; z-index: 100; display: none; max-width: 360px; text-align: center; }
+  .toast.show { display: block; }
+
+  @media (max-width: 1200px) { .stat-grid { grid-template-columns: repeat(3, 1fr); } .grid-row-1, .grid-row-2, .grid-row-3 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand-row">
+      <div class="brand-icon">🌿</div>
+      <div class="name">HarvestLink</div>
+    </div>
+
+    <div class="farm-chip">
+      <div class="farm-avatar" id="facAvatar">?</div>
+      <div>
+        <div class="farm-name" id="facName">—</div>
+        <div class="farm-badge">Storage provider</div>
+      </div>
+    </div>
+
+    <nav class="side-nav">
+      <a class="nav-link active" data-target="top"><span class="ic">▦</span><span class="label">Dashboard</span></a>
+      <a class="nav-link" data-target="capacityPanel"><span class="ic">📊</span><span class="label">Capacity Overview</span></a>
+      <a class="nav-link" data-target="bookingsPanel"><span class="ic">📦</span><span class="label">Storage Bookings</span></a>
+      <a class="nav-link" data-target="pendingPanel"><span class="ic">⏱</span><span class="label">Pending Requests</span></a>
+      <a class="nav-link" data-target="typesPanel"><span class="ic">🏷</span><span class="label">Storage Types</span></a>
+      <a class="nav-link" data-target="earningsPanel"><span class="ic">$</span><span class="label">Earnings</span></a>
+      <div class="nav-divider"></div>
+      <a class="nav-link" href="messages.html"><span class="ic">💬</span><span class="label">Messages</span> <span class="badge" id="msgBadge" style="display:none;">0</span></a>
+      <a class="nav-link" onclick="window.location.href='notifications-admin.html'"><span class="ic">🔔</span><span class="label">Notifications</span> <span class="badge" id="notifBadge" style="display:none;">0</span></a>
+      <div class="nav-divider"></div>
+      <a class="nav-link" id="logoutBtn"><span class="ic">⎋</span><span class="label">Logout</span></a>
+    </nav>
+
+    <div class="sidebar-promo">
+      <strong>More storage, more earnings!</strong>
+      Add more capacity to serve more farmers.
+      <button id="addTypeBtnSidebar">+ Add storage type</button>
+    </div>
+  </aside>
+
+  <main>
+    <div id="top"></div>
+    <div class="top-row">
+      <div>
+        <h1 id="welcomeMsg">Welcome back!</h1>
+        <div class="sub" id="welcomeSub">Here's your storage overview.</div>
+      </div>
+      <div class="top-right">
+        <div class="date-pill" id="datePill">📅 —</div>
+<div class="icon-btn" id="bellIconBtn" onclick="window.location.href='notifications-admin.html'">🔔<span class="badge" id="bellIconBadge" style="display:none;">0</span></div>   
+        <button class="add-new-btn" id="addTypeBtn">+ Add storage type</button>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-icon green">📦</div>
+        <div><div class="label">Total Capacity</div><div class="value" id="statTotalCap">—</div><div class="sub" id="statTotalCapSub"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon blue">📊</div>
+        <div><div class="label">Used Capacity</div><div class="value" id="statUsedCap">—</div><div class="sub" id="statUsedCapSub"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange">🗄</div>
+        <div><div class="label">Available Capacity</div><div class="value" id="statAvailCap">—</div><div class="sub" id="statAvailCapSub"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple">📋</div>
+        <div><div class="label">Active Bookings</div><div class="value" id="statActiveBookings">—</div><div class="sub" id="statActiveBookingsSub"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">$</div>
+        <div><div class="label">This Month Earnings</div><div class="value" id="statEarnings">—</div><div class="sub up" id="statEarningsSub"></div></div>
+      </div>
+    </div>
+
+    <div class="grid-row-1">
+      <div class="panel" id="capacityPanel">
+        <div class="panel-head"><h2>Capacity Overview</h2><span class="view-all" data-target="typesPanel">View details</span></div>
+        <div class="donut-wrap">
+          <div class="donut" id="donutEl"><div class="donut-center"><div class="num" id="donutPct">—</div><div class="lbl">Used</div></div></div>
+          <div class="legend">
+            <div class="item"><span class="dot" style="background:var(--brand);"></span> Used</div>
+            <div class="item"><span class="dot" style="background:var(--border);"></span> Available</div>
+          </div>
+        </div>
+        <div id="typeBarsMini" style="margin-top:16px;"></div>
+      </div>
+
+      <div class="panel" id="pendingPanel">
+        <div class="panel-head"><h2>Pending Requests</h2><span class="view-all" data-target="bookingsPanel">View all</span></div>
+        <div id="pendingList"></div>
+        <div class="panel-foot" id="pendingFoot"></div>
+      </div>
+
+      <div class="panel" id="currentPanel">
+        <div class="panel-head"><h2>Current Storage (In Storage)</h2><span class="view-all" data-target="bookingsPanel">View all</span></div>
+        <div id="currentList"></div>
+      </div>
+    </div>
+
+    <div class="grid-row-2">
+      <div class="panel" id="bookingsPanel">
+        <div class="panel-head"><h2>Storage Bookings</h2></div>
+        <table class="data-table">
+          <thead><tr><th>Farmer</th><th>Quantity</th><th>Status</th><th>Requested</th></tr></thead>
+          <tbody id="bookingsTableBody"></tbody>
+        </table>
+        <div class="panel-empty" id="bookingsEmpty" style="display:none; margin-top:10px;">No bookings yet.</div>
+      </div>
+
+      <div class="panel" id="collectionPanel">
+        <div class="panel-head"><h2>Collection Requests</h2></div>
+        <div id="collectionList"></div>
+        <div class="panel-empty" id="collectionEmpty" style="display:none;">Nothing ready for collection.</div>
+      </div>
+    </div>
+
+    <div class="grid-row-3">
+      <div class="panel" id="typesPanel">
+        <div class="panel-head"><h2>Storage Types</h2></div>
+        <div id="typesList"></div>
+        <div class="panel-empty" id="typesEmpty" style="display:none;">No storage types added yet.</div>
+      </div>
+
+      <div class="panel" id="notifPanel">
+        <div class="panel-head"><h2>Recent Notifications</h2></div>
+        <div id="notifList"></div>
+      </div>
+
+      <div class="panel" id="earningsPanel">
+        <div class="panel-head"><h2>Earnings Overview</h2></div>
+        <div class="earnings-stats">
+          <div class="earnings-stat"><div class="e-num" id="earnThisMonth">—</div><div class="e-lbl">This month</div></div>
+          <div class="earnings-stat"><div class="e-num" id="earnLastMonth">—</div><div class="e-lbl">Last month</div></div>
+          <div class="earnings-stat"><div class="e-num" id="earnAllTime">—</div><div class="e-lbl">Total earnings</div></div>
+        </div>
+        <div id="earningsList" style="margin-top: 14px;"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="typeModalOverlay">
+  <div class="modal">
+    <h3 id="typeModalTitle">Add storage type</h3>
+    <input type="hidden" id="type_id" />
+    <label for="type_name">Type name</label>
+    <input type="text" id="type_name" placeholder="e.g. Cold Storage" />
+    <div class="form-row">
+      <div><label for="type_capacity">Capacity (tons)</label><input type="number" id="type_capacity" step="0.1" /></div>
+      <div><label for="type_used">Currently used (tons)</label><input type="number" id="type_used" step="0.1" /></div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn secondary" id="cancelTypeBtn">Cancel</button>
+      <button type="button" class="btn primary" id="confirmTypeBtn">Save</button>
+    </div>
+    <div class="inline-msg" id="typeModalMsg"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<a href="notifications-admin.html" class="nav-link">Notifications</a>
+
+<script src="js/dashboard-storager.js"></script>
+</body>
+</html>

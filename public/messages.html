@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HarvestLink — Messages</title>
+<script>
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+  }
+</script>
+<style>
+  :root {
+    --bg: #f4f6f4; --card-bg: #ffffff; --border: #eaeceb;
+    --text: #1c211d; --text-muted: #7c847e; --radius: 14px;
+  
+    --sidebar-bg: #16351f; --sidebar-bg-2: #0f2417; --brand: #2f8a4c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+  a { text-decoration: none; color: inherit; }
+  button { font-family: inherit; }
+  .layout { display: flex; min-height: 100vh; }
+
+ 
+  .sidebar { width: 240px; flex-shrink: 0; background: linear-gradient(180deg, var(--sidebar-bg), var(--sidebar-bg-2)); color: #d8dcd8; display: flex; flex-direction: column; padding: 1.25rem 0.9rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .brand-row { display: flex; align-items: center; gap: 9px; padding: 0 6px 20px; }
+  .brand-icon { width: 30px; height: 30px; border-radius: 8px; background: var(--brand); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .brand-row .name { font-weight: 700; font-size: 15.5px; color: #fff; }
+
+  .user-chip { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px; margin-bottom: 18px; }
+  .user-avatar { width: 34px; height: 34px; border-radius: 8px; background: var(--brand); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .user-chip .u-name { font-size: 13px; font-weight: 700; color: #fff; }
+  .user-chip .u-role { font-size: 10.5px; color: rgba(255,255,255,0.65); }
+
+  nav.side-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow-y: auto; }
+  .nav-link { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; font-size: 13.5px; color: #d8dcd8; cursor: pointer; }
+  .nav-link .ic { width: 17px; text-align: center; font-size: 14px; opacity: 0.85; }
+  .nav-link:hover { background: rgba(255,255,255,0.06); }
+  .nav-link.active { background: var(--brand); color: #fff; font-weight: 600; }
+  .nav-link .badge { margin-left: auto; background: #e05353; color: #fff; font-size: 10px; font-weight: 700; border-radius: 999px; min-width: 17px; height: 17px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+  .nav-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 10px 4px; }
+
+  nav.side-nav::-webkit-scrollbar { width: 6px; }
+  nav.side-nav::-webkit-scrollbar-track { background: transparent; }
+  nav.side-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+
+
+  main { flex: 1; padding: 1.6rem 2rem; max-width: 1200px; }
+  .top-row h1 { font-size: 21px; font-weight: 700; margin-bottom: 3px; }
+  .top-row .sub { font-size: 13px; color: var(--text-muted); margin-bottom: 1.4rem; }
+
+  .inbox { display: grid; grid-template-columns: 320px 1fr; gap: 16px; height: calc(100vh - 140px); }
+  .panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; overflow-y: auto; }
+  .conv-item { display: flex; gap: 10px; padding: 10px; border-radius: 10px; cursor: pointer; }
+  .conv-item:hover, .conv-item.active { background: #f2f2f2; }
+  .conv-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--brand); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .conv-name { font-size: 13px; font-weight: 700; }
+  .conv-preview { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px; }
+  .conv-unread { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); margin-left: auto; }
+
+  .thread-panel { display: flex; flex-direction: column; }
+  .thread-header { font-weight: 700; font-size: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+  .thread-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 4px; }
+  .bubble { max-width: 70%; padding: 8px 12px; border-radius: 12px; font-size: 13px; }
+  .bubble.mine { align-self: flex-end; background: var(--brand); color: #fff; }
+  .bubble.theirs { align-self: flex-start; background: #f0f0f0; }
+  .bubble .bt { display: block; font-size: 10px; opacity: 0.7; margin-top: 3px; }
+  .reply-row { display: flex; gap: 8px; margin-top: 10px; }
+  .reply-row input { flex: 1; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
+  .reply-row button { background: var(--brand); color: #fff; border: none; border-radius: 8px; padding: 9px 16px; font-weight: 600; cursor: pointer; }
+  .panel-empty { color: var(--text-muted); font-size: 13px; text-align: center; padding: 30px 10px; }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1c211d; color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 13px; z-index: 100; display: none; max-width: 360px; text-align: center; }
+  .toast.show { display: block; }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand-row">
+      <div class="brand-icon">🌿</div>
+      <div class="name">HarvestLink</div>
+    </div>
+
+    <div class="user-chip">
+      <div class="user-avatar" id="userAvatar">?</div>
+      <div>
+        <div class="u-name" id="userName">—</div>
+        <div class="u-role" id="userRole"></div>
+      </div>
+    </div>
+
+
+    <nav class="side-nav" id="sideNav"></nav>
+  </aside>
+
+  <main>
+    <div class="top-row">
+      <h1>Messages</h1>
+      <div class="sub">All your conversations in one place.</div>
+    </div>
+
+    <div class="inbox">
+      <div class="panel" id="convList"><div class="panel-empty">Loading…</div></div>
+      <div class="panel thread-panel">
+        <div class="thread-header" id="threadHeader">Select a conversation</div>
+        <div class="thread-body" id="threadBody"><div class="panel-empty">No conversation selected.</div></div>
+        <div class="reply-row" id="replyRow" style="display:none;">
+          <input type="text" id="replyInput" placeholder="Type a reply…" />
+          <button id="replySend">Send</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/messages.js"></script>
+</body>
+</html>

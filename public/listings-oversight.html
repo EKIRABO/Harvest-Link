@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HarvestLink — Listings Oversight</title>
+<style>
+  :root {
+    --sidebar-bg: #0f1a3d;
+    --sidebar-bg-2: #0a1329;
+    --sidebar-active: #3b6fd6;
+    --sidebar-text: #c3cbe0;
+    --brand: #2f8a4c;
+    --bg: #f4f6f4;
+    --border: #eaeceb;
+    --text: #1c211d;
+    --text-muted: #7c847e;
+    --red: #d65b5b;
+    --orange: #d98a2b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+  a { text-decoration: none; color: inherit; }
+
+  .layout { display: flex; min-height: 100vh; }
+
+ 
+  .sidebar { width: 240px; flex-shrink: 0; background: linear-gradient(180deg, var(--sidebar-bg), var(--sidebar-bg-2)); color: var(--sidebar-text); display: flex; flex-direction: column; padding: 1.25rem 0.9rem; }
+  .brand-row { display: flex; align-items: center; gap: 9px; padding: 0 6px 20px; }
+  .brand-icon { width: 30px; height: 30px; border-radius: 8px; background: var(--sidebar-active); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .brand-row .name { font-weight: 700; font-size: 15.5px; color: #fff; }
+
+  .admin-chip { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 10px; margin-bottom: 18px; }
+  .admin-avatar { width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(135deg, #6f9be0, #3b6fd6); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .admin-chip .a-name { font-size: 13px; font-weight: 700; color: #fff; }
+  .admin-chip .a-badge { font-size: 10.5px; color: #9db3e0; }
+
+  nav.side-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow-y: auto; }
+  .nav-link { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; font-size: 13.5px; color: var(--sidebar-text); cursor: pointer; }
+  .nav-link .ic { width: 17px; text-align: center; font-size: 14px; opacity: 0.85; }
+  .nav-link:hover { background: rgba(255,255,255,0.05); }
+  .nav-link.active { background: var(--sidebar-active); color: #fff; font-weight: 600; }
+
+ 
+  main { flex: 1; padding: 24px; max-width: 1100px; }
+  .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .top-row h1 { font-size: 19px; font-weight: 700; }
+  .filter-bar { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .filter-bar input, .filter-bar select { padding:8px 10px; border:1px solid var(--border); border-radius:6px; font-size:13px; }
+  .btn { padding:8px 14px; border-radius:6px; font-size:12.5px; font-weight:600; cursor:pointer; border:1px solid var(--border); background:#fff; }
+  table { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+  th, td { text-align:left; padding:10px 12px; font-size:12.5px; border-bottom:1px solid var(--border); }
+  th { color:var(--text-muted); font-size:10.5px; text-transform:uppercase; background:var(--bg); }
+  tr:last-child td { border-bottom:none; }
+  .status-chip { font-size:10px; font-weight:700; padding:3px 8px; border-radius:999px; }
+  .status-chip.available { background:#e5f4e8; color:var(--brand); }
+  .status-chip.sold { background:#f0f0f0; color:var(--text-muted); }
+  .empty { text-align:center; padding:40px; color:var(--text-muted); font-size:13px; }
+  .count-label { font-size:13px; color:var(--text-muted); margin-bottom:12px; }
+
+  @media (max-width: 760px) {
+    .sidebar { width: 64px; padding: 1.1rem 0.4rem; }
+    .brand-row .name, .admin-chip .a-name, .admin-chip .a-badge, .nav-link .label { display: none; }
+    .admin-chip { justify-content: center; padding: 8px; }
+    .nav-link { justify-content: center; }
+    main { padding: 1.2rem 1rem 2rem; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand-row">
+      <div class="brand-icon">🌿</div>
+      <div class="name">HarvestLink</div>
+    </div>
+
+    <div class="admin-chip">
+      <div class="admin-avatar" id="aAvatar">?</div>
+      <div>
+        <div class="a-name" id="aName">—</div>
+        <div class="a-badge">Super Administrator</div>
+      </div>
+    </div>
+
+    <nav class="side-nav">
+      <a class="nav-link" href="dashboard-admin.html"><span class="ic">▦</span><span class="label">Dashboard</span></a>
+      <a class="nav-link" href="dashboard-admin.html"><span class="ic">👥</span><span class="label">User Management</span></a>
+      <a class="nav-link active" href="listings-oversight.html"><span class="ic">🧾</span><span class="label">Listings</span></a>
+      <a class="nav-link" href="reports-analytics.html"><span class="ic">💹</span><span class="label">Reports &amp; Analytics</span></a>
+      <a class="nav-link" href="dashboard-admin.html"><span class="ic">🕓</span><span class="label">Activity Log</span></a>
+      <a class="nav-link" id="logoutBtn"><span class="ic">⎋</span><span class="label">Logout</span></a>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="top-row">
+      <h1>Listings Oversight</h1>
+    </div>
+
+    <div class="filter-bar">
+      <select id="statusFilter">
+        <option value="">All statuses</option>
+        <option value="available">Available</option>
+        <option value="sold">Sold</option>
+      </select>
+      <input type="text" id="cropFilter" placeholder="Filter by crop..." />
+      <input type="text" id="districtFilter" placeholder="Filter by district..." />
+      <button class="btn" id="filterBtn">Filter</button>
+      <button class="btn" id="clearBtn">Clear</button>
+    </div>
+    <div class="count-label" id="countLabel"></div>
+    <table>
+      <thead><tr><th>Crop</th><th>Farmer</th><th>Quantity</th><th>Price</th><th>District</th><th>Status</th><th>Posted</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="empty" style="display:none;">No listings match this filter.</div>
+  </main>
+</div>
+
+<script>
+  
+  (function () {
+    const token = localStorage.getItem("hl_token");
+    const user = JSON.parse(localStorage.getItem("hl_user") || "null");
+    if (!token || !user || user.role !== "admin") {
+      window.location.href = "login.html";
+      return;
+    }
+    document.getElementById("aName").textContent = user.full_name;
+    document.getElementById("aAvatar").textContent = user.full_name.charAt(0).toUpperCase();
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("hl_token");
+      localStorage.removeItem("hl_user");
+      window.location.href = "login.html";
+    });
+  })();
+</script>
+<script src="js/listings-oversight.js"></script>
+</body>
+</html>

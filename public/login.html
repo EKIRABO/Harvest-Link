@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HarvestLink</title>
+<link rel="stylesheet" href="css/theme.css" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    display: flex;
+    min-height: 100vh;
+    color: #1a1a1a;
+  }
+
+
+  .side-panel {
+    flex: 1;
+    background: #1e6b3c;
+    color: #ffffff;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 320px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2.5rem;
+  }
+  .brand-icon {
+    width: 28px;
+    height: 28px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+  .brand-name { font-size: 16px; font-weight: 600; }
+  .side-panel h1 {
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 1rem;
+    max-width: 420px;
+  }
+  .side-panel p.tagline {
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.85);
+    max-width: 420px;
+    margin-bottom: 2rem;
+  }
+  .feature-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .feature-list li { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+  .feature-icon {
+    width: 28px;
+    height: 28px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+
+  
+  .form-panel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: #ffffff;
+  }
+  .form-container { width: 100%; max-width: 360px; }
+
+  .tabs {
+    display: flex;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 10px;
+    background: #ffffff;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    color: #666;
+  }
+  .tab-btn.active { background: #f4f4f2; font-weight: 600; color: #1a1a1a; }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    margin-top: 14px;
+  }
+  label:first-of-type { margin-top: 0; }
+
+  input, select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d8d8d3;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fafaf8;
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: #1e6b3c;
+    background: #ffffff;
+  }
+
+  .submit-btn {
+    width: 100%;
+    margin-top: 1.5rem;
+    padding: 12px;
+    background: #1e6b3c;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .submit-btn:hover { background: #185b32; }
+  .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .demo-row {
+    margin-top: 1.25rem;
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+    line-height: 1.8;
+  }
+  .demo-row span.label { display: block; color: #aaa; margin-bottom: 4px; }
+  .demo-link {
+    color: #1e6b3c;
+    text-decoration: none;
+    margin: 0 4px;
+    font-weight: 500;
+  }
+  .demo-link:hover { text-decoration: underline; }
+
+  .error-msg {
+    display: none;
+    background: #fdecea;
+    color: #a33333;
+    border: 1px solid #f3c6c2;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  .error-msg.show { display: block; }
+
+  .success-msg {
+    display: none;
+    background: #eaf5ee;
+    color: #1e6b3c;
+    border: 1px solid #bfe3cc;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  .success-msg.show { display: block; }
+
+  .panel-form { display: none; }
+  .panel-form.active { display: block; }
+
+  @media (max-width: 760px) {
+    body { flex-direction: column; }
+    .side-panel { min-height: 240px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="side-panel">
+  <div class="brand">
+    <div class="brand-icon">&#127807;</div>
+    <span class="brand-name">HarvestLink</span>
+  </div>
+  <h1>Connecting Rwanda's food supply chain.</h1>
+  <p class="tagline">
+    Farmers, buyers, transporters and storage providers on one platform;
+    reducing food loss, improving incomes, and keeping produce moving.
+  </p>
+  <ul class="feature-list">
+    <li><span class="feature-icon">&#127806;</span> List produce directly from the farm</li>
+    <li><span class="feature-icon">&#128722;</span> Source quality produce across Rwanda</li>
+    <li><span class="feature-icon">&#128666;</span> Coordinate last-mile delivery</li>
+    <li><span class="feature-icon">&#127970;</span> Connect to cold storage and silos</li>
+  </ul>
+</div>
+
+<div class="form-panel">
+  <div class="form-container">
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-signin" onclick="switchTab('signin')">Sign in</button>
+      <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Create account</button>
+    </div>
+
+    <div class="error-msg" id="error-msg"></div>
+    <div class="success-msg" id="success-msg"></div>
+
+    <!-- Sign in form -->
+    <form class="panel-form active" id="signin-form" onsubmit="handleLogin(event)">
+      <label for="signin-identifier">Phone or email</label>
+      <input type="text" id="signin-identifier" placeholder="+250 7XX XXX XXX" required />
+
+      <label for="signin-password">Password</label>
+      <input type="password" id="signin-password" placeholder="••••••••" required />
+      <div style="text-align: right; margin-top: 6px;">
+  <a href="forgot-password.html" style="font-size: 12px; color: #1e6b3c; text-decoration: none;">Forgot password?</a>
+</div>
+
+      <button type="submit" class="submit-btn" id="signin-submit">Sign in</button>
+
+      
+    </form>
+
+    <!-- Register form -->
+    <form class="panel-form" id="register-form" onsubmit="handleRegister(event)">
+      <label for="reg-name">Full name</label>
+      <input type="text" id="reg-name" placeholder="Kevin Manzi" required />
+
+      <label for="reg-role">I am a</label>
+      <select id="reg-role" required>
+        <option value="">Select a role</option>
+        <option value="farmer">Farmer</option>
+        <option value="buyer">Buyer</option>
+        <option value="transporter">Transporter</option>
+        <option value="storage_provider">Storage provider</option>
+      </select>
+
+      <label for="reg-identifier-type">Phone or email</label>
+      <input type="text" id="reg-identifier-type" placeholder="+250 7XX XXX XXX or you@email.com" required />
+
+      <label for="reg-password">Password</label>
+      <input type="password" id="reg-password" placeholder="At least 6 characters" required minlength="6" />
+
+      <label for="reg-district">District (optional)</label>
+      <input type="text" id="reg-district" placeholder="e.g. Musanze" />
+
+      <button type="submit" class="submit-btn" id="register-submit">Create account</button>
+    </form>
+
+  </div>
+</div>
+
+<script>
+  const API_BASE = "http://localhost:5000/api";
+
+  function switchTab(tab) {
+    document.getElementById("tab-signin").classList.toggle("active", tab === "signin");
+    document.getElementById("tab-register").classList.toggle("active", tab === "register");
+    document.getElementById("signin-form").classList.toggle("active", tab === "signin");
+    document.getElementById("register-form").classList.toggle("active", tab === "register");
+    hideMessages();
+  }
+
+  function showError(msg) {
+    const el = document.getElementById("error-msg");
+    el.textContent = msg;
+    el.classList.add("show");
+    document.getElementById("success-msg").classList.remove("show");
+  }
+
+  function showSuccess(msg) {
+    const el = document.getElementById("success-msg");
+    el.textContent = msg;
+    el.classList.add("show");
+    document.getElementById("error-msg").classList.remove("show");
+  }
+
+  function hideMessages() {
+    document.getElementById("error-msg").classList.remove("show");
+    document.getElementById("success-msg").classList.remove("show");
+  }
+
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    hideMessages();
+    const identifier = document.getElementById("signin-identifier").value.trim();
+    const password = document.getElementById("signin-password").value;
+    const btn = document.getElementById("signin-submit");
+    btn.disabled = true;
+    btn.textContent = "Signing in...";
+
+    try {
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifier, password }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError(data.error || "Login failed.");
+        return;
+      }
+
+      localStorage.setItem("hl_token", data.token);
+      localStorage.setItem("hl_user", JSON.stringify(data.user));
+      showSuccess(data.message || "Welcome back.");
+
+const roleDashboards = { farmer: "dashboard-farmer.html", buyer: "dashboard-buyer.html", transporter: "dashboard-transporter.html",
+  admin:"dashboard-admin.html",
+  storage_provider:"dashboard-storager.html"  };
+window.location.href = roleDashboards[data.user.role] || "dashboard.html";
+   } catch (err) {
+      console.error(err);
+      showError("Could not reach the server. Is it running?");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Sign in";
+    }
+  }
+
+  async function handleRegister(e) {
+    e.preventDefault();
+    hideMessages();
+
+    const full_name = document.getElementById("reg-name").value.trim();
+    const role = document.getElementById("reg-role").value;
+    const identifierRaw = document.getElementById("reg-identifier-type").value.trim();
+    const password = document.getElementById("reg-password").value;
+    const district = document.getElementById("reg-district").value.trim();
+
+    const isEmail = identifierRaw.includes("@");
+    const payload = {
+      full_name,
+      role,
+      password,
+      district: district || undefined,
+      email: isEmail ? identifierRaw : undefined,
+      phone: isEmail ? undefined : identifierRaw,
+    };
+
+    const btn = document.getElementById("register-submit");
+    btn.disabled = true;
+    btn.textContent = "Creating account...";
+
+    try {
+      const res = await fetch(`${API_BASE}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError(data.error || "Registration failed.");
+        return;
+      }
+
+      showSuccess("Account created. You can now sign in.");
+      switchTab("signin");
+      document.getElementById("signin-identifier").value = identifierRaw;
+    } catch (err) {
+      console.error(err);
+      showError("Could not reach the server. Is it running?");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Create account";
+    }
+  }
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HarvestLink — Admin Panel</title>
+<link rel="stylesheet" href="css/theme.css" />
+<style>
+  :root {
+    --sidebar-bg: #0f1a3d;
+    --sidebar-bg-2: #0a1329;
+    --sidebar-active: #3b6fd6;
+    --sidebar-text: #c3cbe0;
+    --brand: #3b6fd6;
+    --brand-dark: #2c56ad;
+    --bg: #f5f6fa;
+    --card-bg: #ffffff;
+    --border: #eaecf3;
+    --text: #1c211d;
+    --text-muted: #7c847e;
+    --green: #2f8a4c;
+    --orange: #d98a2b;
+    --purple: #8a5cd6;
+    --red: #d65b5b;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+  a { text-decoration: none; color: inherit; }
+  button { font-family: inherit; }
+  .layout { display: flex; min-height: 100vh; }
+
+
+  .sidebar { width: 240px; flex-shrink: 0; background: linear-gradient(180deg, var(--sidebar-bg), var(--sidebar-bg-2)); color: var(--sidebar-text); display: flex; flex-direction: column; padding: 1.25rem 0.9rem; }
+  .brand-row { display: flex; align-items: center; gap: 9px; padding: 0 6px 20px; }
+  .brand-icon { width: 30px; height: 30px; border-radius: 8px; background: var(--brand); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .brand-row .name { font-weight: 700; font-size: 15.5px; color: #fff; }
+
+  .admin-chip { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 10px; margin-bottom: 18px; }
+  .admin-avatar { width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(135deg, #6f9be0, #3b6fd6); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .admin-chip .a-name { font-size: 13px; font-weight: 700; color: #fff; }
+  .admin-chip .a-badge { font-size: 10.5px; color: #9db3e0; }
+
+  nav.side-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow-y: auto; }
+  .nav-link { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; font-size: 13.5px; color: var(--sidebar-text); cursor: pointer; }
+  .nav-link .ic { width: 17px; text-align: center; font-size: 14px; opacity: 0.85; }
+  .nav-link:hover { background: rgba(255,255,255,0.05); }
+  .nav-link.active { background: var(--sidebar-active); color: #fff; font-weight: 600; }
+  .nav-link.disabled { opacity: 0.45; cursor: default; }
+  .nav-link.disabled:hover { background: none; }
+  .nav-link .soon-tag { margin-left: auto; font-size: 9px; text-transform: uppercase; background: rgba(255,255,255,0.08); padding: 2px 5px; border-radius: 4px; }
+  .nav-link .badge { margin-left: auto; background: #e05353; color: #fff; font-size: 10px; font-weight: 700; border-radius: 999px; min-width: 17px; height: 17px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+  .nav-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 10px 4px; }
+
+
+  main { flex: 1; padding: 1.6rem 2rem 2.4rem; max-width: 1400px; }
+  .top-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.4rem; flex-wrap: wrap; gap: 12px; }
+  .top-row h1 { font-size: 21px; font-weight: 700; margin-bottom: 3px; }
+  .top-row .sub { font-size: 13px; color: var(--text-muted); }
+  .top-right { display: flex; align-items: center; gap: 10px; }
+  .date-pill { display: flex; align-items: center; gap: 7px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 12.5px; color: var(--text-muted); }
+  .icon-btn { width: 36px; height: 36px; border-radius: 9px; border: 1px solid var(--border); background: var(--card-bg); cursor: pointer; font-size: 15px; position: relative; display: flex; align-items: center; justify-content: center; }
+  .icon-btn .badge { position: absolute; top: -5px; right: -5px; background: #e05353; color: #fff; font-size: 10px; font-weight: 700; border-radius: 999px; min-width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; padding: 0 3px; }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 1.4rem; }
+  .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+  .stat-icon { width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .stat-icon.blue { background: #e8effc; color: var(--blue, #3b6fd6); }
+  .stat-icon.green { background: #e5f4e8; color: var(--green); }
+  .stat-icon.purple { background: #f1eafb; color: var(--purple); }
+  .stat-icon.orange { background: #fbf0e1; color: var(--orange); }
+  .stat-card .label { font-size: 11.5px; color: var(--text-muted); margin-bottom: 3px; }
+  .stat-card .value { font-size: 18px; font-weight: 700; line-height: 1.2; }
+  .stat-card .sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  .panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+  .panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; flex-wrap: wrap; }
+  .panel-head h2 { font-size: 14.5px; font-weight: 700; }
+  .panel-empty { font-size: 12.5px; color: var(--text-muted); text-align: center; padding: 20px 8px; border: 1px dashed var(--border); border-radius: 10px; }
+
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filters select, .filters input { padding: 6px 9px; border: 1px solid var(--border); border-radius: 7px; font-size: 12px; }
+
+  table.data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.data-table th { text-align: left; color: var(--text-muted); font-weight: 500; padding: 8px 6px; border-bottom: 1px solid var(--border); }
+  table.data-table td { padding: 9px 6px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .role-chip { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px; text-transform: capitalize; }
+  .role-chip.farmer { background: #e5f4e8; color: var(--green); }
+  .role-chip.buyer { background: #f1eafb; color: var(--purple); }
+  .role-chip.transporter { background: #e8effc; color: var(--brand); }
+  .role-chip.storage_provider { background: #fbf0e1; color: var(--orange); }
+  .role-chip.admin { background: #f0f0f0; color: var(--text-muted); }
+  .status-chip { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
+  .status-chip.active { background: #e5f4e8; color: var(--green); }
+  .status-chip.suspended { background: #fbe6e6; color: var(--red); }
+  .mini-btn { border: 1px solid var(--border); background: #fff; border-radius: 6px; padding: 4px 9px; font-size: 11px; font-weight: 600; cursor: pointer; }
+  .mini-btn.danger { background: #fbe6e6; color: var(--red); border-color: #f3c9c9; }
+  .mini-btn.primary { background: var(--green); color: #fff; border-color: var(--green); }
+  .mini-btn:hover { opacity: 0.85; }
+
+  .activity-item { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 12.5px; }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-ic { width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0; font-size: 12px; display: flex; align-items: center; justify-content: center; background: #e8effc; color: var(--brand); margin-top: 1px; }
+  .activity-time { font-size: 10.5px; color: var(--text-muted); margin-top: 2px; }
+
+  .grid-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 14px; margin-bottom: 14px; }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1c211d; color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 13px; z-index: 100; display: none; max-width: 360px; text-align: center; }
+  .toast.show { display: block; }
+
+  @media (max-width: 1200px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } .grid-row { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) {
+    .sidebar { width: 64px; padding: 1.1rem 0.4rem; }
+    .brand-row .name, .admin-chip .a-name, .admin-chip .a-badge, .nav-link .label, .nav-link .soon-tag { display: none; }
+    .admin-chip { justify-content: center; padding: 8px; }
+    .nav-link { justify-content: center; }
+    main { padding: 1.2rem 1rem 2rem; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand-row">
+      <div class="brand-icon">🌿</div>
+      <div class="name">HarvestLink</div>
+    </div>
+
+    <div class="admin-chip">
+      <div class="admin-avatar" id="aAvatar">?</div>
+      <div>
+        <div class="a-name" id="aName">—</div>
+        <div class="a-badge">Super Administrator</div>
+      </div>
+    </div>
+
+
+<nav class="side-nav">
+  <a class="nav-link active" data-target="top"><span class="ic">▦</span><span class="label">Dashboard</span></a>
+  <a class="nav-link" data-target="usersPanel"><span class="ic">👥</span><span class="label">User Management</span></a>
+  <a class="nav-link" href="listings-oversight.html"><span class="ic">🧾</span><span class="label">Listings</span></a>
+<a class="nav-link" href="reports-analytics.html"><span class="ic">💹</span><span class="label">Reports & Analytics</span></a>
+  <a class="nav-link" data-target="activityPanel"><span class="ic">🕓</span><span class="label">Activity Log</span></a>
+  <a class="nav-link" id="logoutBtn"><span class="ic">⎋</span><span class="label">Logout</span></a>
+
+</nav>
+  </aside>
+
+  <main>
+    <div id="top"></div>
+    <div class="top-row">
+      <div>
+        <h1 id="welcomeMsg">Welcome back!</h1>
+        <div class="sub">Here's an overview of what's happening on HarvestLink.</div>
+      </div>
+      <div class="top-right">
+        <div class="date-pill" id="datePill">📅 —</div>
+<div class="icon-btn" onclick="window.location.href='notifications-admin.html'">🔔</div>      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue">👥</div>
+        <div>
+          <div class="label">Total Users</div>
+          <div class="value" id="statTotalUsers">—</div>
+          <div class="sub" id="statTotalUsersSub"></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">🧾</div>
+        <div>
+          <div class="label">Active Listings</div>
+          <div class="value" id="statListings">—</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple">📋</div>
+        <div>
+          <div class="label">Total Reservations</div>
+          <div class="value" id="statReservations">—</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange">$</div>
+        <div>
+          <div class="label">Total Transactions</div>
+          <div class="value" id="statTransactions">—</div>
+          <div class="sub" id="statTransactionsSub"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-row">
+      <div class="panel" id="usersPanel">
+        <div class="panel-head">
+          <h2>User Management</h2>
+          <div class="filters">
+            <select id="roleFilter">
+              <option value="">All roles</option>
+              <option value="farmer">Farmer</option>
+              <option value="buyer">Buyer</option>
+              <option value="transporter">Transporter</option>
+              <option value="storage_provider">Storage Provider</option>
+              <option value="admin">Admin</option>
+            </select>
+            <select id="activeFilter">
+              <option value="">All statuses</option>
+              <option value="1">Active</option>
+              <option value="0">Suspended</option>
+            </select>
+            <input type="text" id="searchInput" placeholder="Search name, email, phone…" />
+          </div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Name</th><th>Role</th><th>Contact</th><th>Location</th><th>Status</th><th>Joined</th><th></th></tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr><td colspan="7" class="panel-empty">Loading users…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel" id="activityPanel">
+        <div class="panel-head"><h2>Recent Activity</h2></div>
+        <div id="activityList"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/dashboard-admin.js"></script>
+<script src="js/theme.js"></script>
+</body>
+</html>

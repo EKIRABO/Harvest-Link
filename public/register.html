@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HarvestLink — Create account</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/theme.css" />
+</head>
+<body>
+
+<div class="auth-wrap">
+  <div class="auth-card" style="max-width:480px;">
+    <h1>Join Harvest<span style="color:var(--gold)">Link</span></h1>
+    <p class="subtitle">Tell us who you are so we can route the right information to you.</p>
+
+    <form id="registerForm">
+      <label for="role">I am a...</label>
+      <select id="role" name="role" required>
+        <option value="">Select your role</option>
+        <option value="farmer">Farmer</option>
+        <option value="transporter">Transporter</option>
+        <option value="storage_provider">Storage facility provider</option>
+        <option value="buyer">Buyer / Market</option>
+        <option value="admin">Administrator</option>
+      </select>
+
+      <label for="full_name">Full name</label>
+      <input type="text" id="full_name" name="full_name" placeholder="e.g. Uwase Alice" required>
+
+      <div class="form-row">
+        <div>
+          <label for="email">Email (optional)</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com">
+        </div>
+        <div>
+          <label for="phone">Phone (optional)</label>
+          <input type="text" id="phone" name="phone" placeholder="0788000000">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label for="district">District</label>
+          <input type="text" id="district" name="district" placeholder="e.g. Rwamagana">
+        </div>
+        <div>
+          <label for="sector">Sector</label>
+          <input type="text" id="sector" name="sector" placeholder="e.g. Muhazi">
+        </div>
+      </div>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="At least 6 characters" required minlength="6">
+
+      <button type="submit" class="btn">Create account</button>
+
+      <div id="errorMsg" class="error-msg"></div>
+      <div id="successMsg" class="success-msg"></div>
+    </form>
+
+    <p class="form-footer">Already registered? <a href="login.html">Log in</a></p>
+  </div>
+</div>
+
+<script src="js/theme.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>
