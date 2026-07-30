@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const pool = require("./config/db");
+const { verifyToken, requireRole } = require("./middleware/auth");
 
 const authRoutes = require("./routes/auth");
 const produceRoutes = require("./routes/produce");
@@ -40,16 +41,16 @@ app.use("/api/reservations", reservationRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/storage/bookings", storageBookingRoutes);
 app.use("/api/storage/types", storageTypesRoutes);
-app.use("/api/storage", storageRoutes); 
+app.use("/api/storage", storageRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/offline-sales", offlineSalesRoutes);
 
 
-app.get("/api/payments/transporter-earnings", async (req, res) => {
+app.get("/api/payments/transporter-earnings", verifyToken, requireRole("transporter"), async (req, res) => {
   try {
     const [rows] = await pool.query(
       "SELECT * FROM earnings WHERE provider_id = ? ORDER BY created_at DESC",
-      [16]
+      [req.user.user_id]
     );
     const total_amount = rows.reduce((sum, row) => sum + Number(row.amount), 0);
     res.json({ earnings: rows, total_amount });
@@ -62,7 +63,6 @@ app.get("/api/payments/transporter-earnings", async (req, res) => {
 app.get("/", (req, res) => {
   res.redirect("/login.html");
 });
-
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "HarvestLink API is running." });
