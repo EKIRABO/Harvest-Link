@@ -8,8 +8,14 @@ async function logAction(userId, action, details = "") {
       [userId, action, details]
     );
   } catch (err) {
-    console.error("Audit log failed:", err.message);
-  }
+    console.error("REGISTER ERROR:", err);
+
+    res.status(500).json({
+        message: err.message,
+        code: err.code,
+        sqlMessage: err.sqlMessage,
+    });
+}
 }
 
 module.exports = { logAction };
