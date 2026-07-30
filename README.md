@@ -42,7 +42,7 @@ https://harvest-link-hutw.onrender.com
 
 **GitHub Repository**
 
-https://github.com/EKIRABO/Harvest-Link
+https://github.com/EKIRABO/Harvest-Link.git
 
 ---
 
