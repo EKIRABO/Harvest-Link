@@ -1,146 +1,247 @@
-# HarvestLink — Sprint 1
+# HarvestLink
 
-A working slice of the HarvestLink platform from your SRS: user registration/login for
-all five roles, role-based access control, and produce listing management (create,
-view, edit, mark sold, delete). Built with **Node.js + Express** on the backend,
-**MySQL** for storage, and plain **HTML/CSS/JS** on the frontend — no framework, no
-build step.
+HarvestLink is a full-stack agricultural coordination platform designed to connect **farmers, buyers, transport providers, storage providers, and administrators** within a single system. The platform streamlines agricultural operations by providing role-based dashboards, produce marketplace functionality, transport coordination, storage management, buyer reservations, simulated payments, messaging, notifications, offline sales tracking, and administrative reporting.
 
-This covers FR 1.1–1.3 (accounts, login, roles), FR 2.1–2.3 (produce listings with photos),
-and an early slice of FR 3 and FR 4 (transporters and storage providers can register their
-availability, and everyone can browse it). Market demand, delivery requests/acceptance,
-notifications, and admin reporting are still Sprint 2–4 and aren't built yet.
+## Live Application
 
-## Tech stack
-- **Backend:** Node.js, Express, mysql2, bcryptjs (password hashing), jsonwebtoken (auth)
-- **Database:** MySQL / MariaDB
-- **Frontend:** Plain HTML/CSS/JS, talks to the backend via `fetch()`
+https://your-deployed-url-here.com
 
-## Project structure
-```
-harvestlink/
-├── server.js              # Express entry point
-├── config/db.js           # MySQL connection pool
-├── middleware/auth.js     # JWT verification + role guard
-├── routes/
-│   ├── auth.js             # register, login
-│   ├── produce.js          # produce listing CRUD + image upload
-│   ├── storage.js          # storage facility registration + browsing
-│   └── transport.js        # transporter availability registration + browsing
-├── database/
-│   ├── harvestlink.sql                          # full schema + 5 seed accounts (fresh installs)
-│   └── migration_01_images_and_availability.sql # run this if you already imported harvestlink.sql
-├── public/
-│   ├── login.html          # login page
-│   ├── register.html       # registration page
-│   ├── dashboard.html      # role-adaptive dashboard
-│   ├── uploads/produce/    # uploaded produce photos land here
-│   ├── css/style.css
-│   └── js/
-│       ├── auth.js
-│       └── dashboard.js
-├── package.json
-└── .env.example
-```
+---
 
-## Setup
+# Technology Stack
 
-**1. Install MySQL/MariaDB and Node.js if you don't have them, then install dependencies:**
+## Backend
+- Node.js
+- Express.js
+- MySQL
+- JWT Authentication
+- bcryptjs
+- Multer
+
+## Frontend
+- HTML
+- CSS
+- JavaScript
+
+---
+
+# Features
+
+## Authentication & User Management
+
+- User registration and login
+- JWT authentication
+- Role-based authorization
+- Profile management
+- Change password
+- Forgot & Reset password
+
+---
+
+## Produce Marketplace
+
+- Create, edit and delete produce listings
+- Image upload support
+- Browse and search produce
+- Market demand posting
+- Reservation approval workflow
+- Automatic reservation expiration
+- Simulated payments
+
+---
+
+## Transport Coordination
+
+- Register transport services
+- Accept transport requests
+- Delivery tracking
+- Delivery status updates
+
+---
+
+## Storage Management
+
+- Register storage facilities
+- Manage multiple storage types
+- Capacity management
+- Storage booking workflow
+
+---
+
+## Communication
+
+- Direct messaging
+- Real-time notifications
+
+---
+
+## Sales Tracking
+
+- Record offline sales
+- Online reservation sales
+- Monthly sales analytics
+- Produce sales reports
+
+---
+
+## Administration
+
+- User management
+- Produce listing oversight
+- Platform analytics
+- Reservation monitoring
+- Delivery monitoring
+- Reports and analytics
+- Audit logs
+- Food-loss and storage-capacity alerts
+
+---
+
+# Using HarvestLink
+
+No installation is required to use the deployed application.
+
+1. Open the live application.
+2. Register as one of the available roles:
+   - Farmer
+   - Buyer
+   - Transport Provider
+   - Storage Provider
+3. Log in to access your role-specific dashboard.
+
+### Suggested Workflow
+
+1. Register as a Farmer and create a produce listing.
+2. Register as a Buyer and reserve produce.
+3. Approve the reservation as the Farmer.
+4. Complete the simulated payment.
+5. Register as a Transport Provider and accept the delivery request.
+6. Register as a Storage Provider and create storage space for farmers to book.
+
+---
+
+# Running the Project Locally
+
+## 1. Clone the Repository
+
 ```bash
-cd harvestlink
+git clone https://github.com/YOUR_USERNAME/HarvestLink.git
+```
+
+## 2. Navigate into the Project
+
+```bash
+cd HarvestLink
+```
+
+## 3. Install Dependencies
+
+```bash
 npm install
 ```
 
-**2. Create the database:**
-```bash
-mysql -u root -p < database/harvestlink.sql
-```
-This creates `harvestlink_db` with all tables and 5 demo accounts (one per role),
-all with the password `password123`.
+## 4. Configure Environment Variables
 
-**If you already imported the database before this update**, run the migration instead
-of re-importing (it only adds the new columns/tables, it won't touch your existing data):
-```bash
-mysql -u root -p harvestlink_db < database/migration_01_images_and_availability.sql
-```
-(Or paste its contents into phpMyAdmin's SQL tab.)
+Create a `.env` file in the project root and configure the following variables:
 
-**3. Create a dedicated database user** (don't use root in your app):
-```sql
-CREATE USER 'harvestlink_user'@'localhost' IDENTIFIED BY 'your_password_here';
-GRANT ALL PRIVILEGES ON harvestlink_db.* TO 'harvestlink_user'@'localhost';
-FLUSH PRIVILEGES;
+```env
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=harvestlink
+JWT_SECRET=your_secret_key
+PORT=5000
 ```
 
-**4. Configure environment variables:**
-```bash
-cp .env.example .env
-```
-Edit `.env` with your DB credentials and set `JWT_SECRET` to a long random string.
+## 5. Import the Database
 
-**5. Run the server:**
+Import the provided SQL file into MySQL using phpMyAdmin or MySQL Workbench. This creates the database schema required for the application to run.
+
+Example:
+
+```
+harvestlink.sql
+```
+
+## 6. Start the Server
+
 ```bash
 npm start
 ```
-Visit `http://localhost:5000` in your browser.
 
-## Demo accounts
-All seeded with password `password123`:
+or
 
-| Role              | Email                          |
-|-------------------|---------------------------------|
-| Farmer            | alice.farmer@harvestlink.rw     |
-| Transporter       | eric.transport@harvestlink.rw   |
-| Storage provider  | josee.storage@harvestlink.rw    |
-| Buyer             | jean.buyer@harvestlink.rw       |
-| Admin             | admin@harvestlink.rw            |
+```bash
+node server.js
+```
 
-## What each role sees right now
-- **Farmer:** can post produce listings (with an optional photo), edit them, mark sold,
-  delete, and see stats on their own listings. Can also browse registered storage
-  facilities and transporters.
-- **Storage provider:** can register/update their own facility (name, type, capacity,
-  district, status), visible to everyone.
-- **Transporter:** can register/update their vehicle and availability (type, capacity,
-  district, status), visible to everyone.
-- **Buyer / Admin:** can browse all available produce listings, storage facilities, and
-  transporters (read-only — action features like requesting a specific delivery or
-  reserving storage space come in Sprint 2–3).
+The application will be available at:
 
-## API endpoints
-| Method | Endpoint                | Access          | Description |
-|--------|--------------------------|-----------------|--------------|
-| POST   | `/api/auth/register`     | Public          | Create an account (FR 1.1, 1.3) |
-| POST   | `/api/auth/login`        | Public          | Log in, returns JWT (FR 1.2) |
-| GET    | `/api/produce`           | Any logged-in role | View available listings (FR 2.3) |
-| GET    | `/api/produce/mine`      | Farmer          | View own listings |
-| POST   | `/api/produce`           | Farmer          | Create a listing, optional image upload (FR 2.1) |
-| PUT    | `/api/produce/:id`       | Farmer (owner)  | Edit / update status / replace image (FR 2.2) |
-| DELETE | `/api/produce/:id`       | Farmer (owner)  | Remove a listing + its image (FR 2.2) |
-| GET    | `/api/storage`           | Any logged-in role | Browse storage facilities (FR 4.3) |
-| GET    | `/api/storage/me`        | Storage provider | View own facility record |
-| PUT    | `/api/storage/me`        | Storage provider | Register/update own facility (FR 4.1, 4.2) |
-| GET    | `/api/transport`         | Any logged-in role | Browse registered transporters |
-| GET    | `/api/transport/me`      | Transporter     | View own vehicle/availability record |
-| PUT    | `/api/transport/me`      | Transporter     | Register/update own vehicle/availability |
+```
+http://localhost:5000
+```
 
-Produce image uploads are sent as `multipart/form-data` (field name `image`), accept
-JPG/PNG/WEBP up to 5MB, and are served back from `/uploads/produce/<filename>`.
+---
 
-## Tested
-This was run end-to-end against a live MySQL instance before being handed to you:
-registration and login for all 5 seed roles, listing creation with a real uploaded image
-(file confirmed written to disk and served back), the "mark sold" JSON update confirmed
-not broken by the image-upload middleware, storage facility registration, transporter
-availability registration, cross-role browsing of all three (produce/storage/transport),
-and role-based access rejection (a buyer attempting to POST a listing correctly gets a
-403) — all verified working before this was handed to you.
+# Project Structure
 
-## Next steps (Sprint 2–4 in your SRS)
-- Delivery request/accept flow between farmers and transporters (FR 3.1–3.3)
-- Reserving storage space, not just browsing it (part of FR 4)
-- Market demand posting + user messaging (FR 5.1–5.3)
-- Notifications (FR 6.1)
-- Admin reporting dashboard (FR 7.1–7.2)
+```
+HarvestLink/
+│
+├── public/
+│   ├── js/
+│   ├── uploads/
+│   ├── dashboard-admin.html
+│   ├── dashboard-buyer.html
+│   ├── dashboard-farmer.html
+│   ├── dashboard-storage.html
+│   ├── dashboard-transporter.html
+│   ├── forgot-password.html
+│   ├── listings.html
+│   ├── login.html
+│   ├── register.html
+│   ├── reset-password.html
+│   └── ...
+│
+├── routes/
+│   ├── admin.js
+│   ├── alerts.js
+│   ├── analytics.js
+│   ├── auth.js
+│   ├── delivery.js
+│   ├── market.js
+│   ├── messages.js
+│   ├── notifications.js
+│   ├── offlineSales.js
+│   ├── payments.js
+│   ├── produce.js
+│   ├── reservations.js
+│   ├── storage.js
+│   ├── storageBookings.js
+│   ├── transport.js
+│   └── utils/
+│
+├── .env
+├── package.json
+├── package-lock.json
+├── server.js
+└── README.md
+```
 
-Happy to build any of these next — just say which one.
+---
+
+# Password Reset
+
+HarvestLink includes a secure password reset feature.
+
+- Passwords are securely hashed using **bcryptjs**.
+- Reset tokens are securely generated and expire automatically.
+- During development, reset links are used directly instead of being emailed because no email service has been configured.
+
+---
+
+# Notes
+
+- Payments are simulated for demonstration purposes.
+- The application is developed for educational purposes.
+- Test account credentials are provided separately.
